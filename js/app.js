@@ -277,7 +277,7 @@ class MapRenderer {
 
     this.canvas.addEventListener('wheel', e => {
       e.preventDefault();
-      const delta = e.deltaY > 0 ? 0.9 : 1.1;
+      const delta = e.deltaY > 0 ? 1.1 : 0.9;
       this.view.zoom = Math.max(0.3, Math.min(5, this.view.zoom * delta));
       this.render();
     });
@@ -408,8 +408,22 @@ class MapRenderer {
     ctx.restore();
   }
 
+  fitToView() {
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+    // Map bounds: roughly 50 to 700 in x, 0 to 1000 in y
+    const mapW = 700 - 50;
+    const mapH = 1000 - 0;
+    const scaleX = w / mapW;
+    const scaleY = h / mapH;
+    this.view.zoom = Math.min(scaleX, scaleY) * 0.9;
+    this.view.x = (w - mapW * this.view.zoom) / 2 - 50 * this.view.zoom;
+    this.view.y = (h - mapH * this.view.zoom) / 2;
+    this.render();
+  }
+
   drawGrid(ctx) {
-    ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
     ctx.lineWidth = 1;
     for (let x = 0; x < 1000; x += 50) {
       ctx.beginPath();
@@ -426,8 +440,9 @@ class MapRenderer {
   }
 
   drawRiver(ctx) {
-    ctx.strokeStyle = '#0ea5e9';
-    ctx.lineWidth = 12;
+    // River glow (wide, soft)
+    ctx.strokeStyle = 'rgba(14, 165, 233, 0.2)';
+    ctx.lineWidth = 30;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.beginPath();
@@ -437,9 +452,19 @@ class MapRenderer {
     });
     ctx.stroke();
 
-    // River glow
-    ctx.strokeStyle = 'rgba(14, 165, 233, 0.3)';
-    ctx.lineWidth = 24;
+    // River body
+    ctx.strokeStyle = '#0ea5e9';
+    ctx.lineWidth = 14;
+    ctx.beginPath();
+    BKK.river.forEach((p, i) => {
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+    ctx.stroke();
+
+    // River highlight
+    ctx.strokeStyle = 'rgba(186, 230, 253, 0.5)';
+    ctx.lineWidth = 6;
     ctx.beginPath();
     BKK.river.forEach((p, i) => {
       if (i === 0) ctx.moveTo(p.x, p.y);
@@ -449,10 +474,10 @@ class MapRenderer {
 
     // River label
     ctx.save();
-    ctx.translate(230, 400);
+    ctx.translate(220, 400);
     ctx.rotate(-Math.PI / 2);
-    ctx.fillStyle = 'rgba(14, 165, 233, 0.6)';
-    ctx.font = '12px Inter';
+    ctx.fillStyle = 'rgba(14, 165, 233, 0.8)';
+    ctx.font = 'bold 13px Inter';
     ctx.textAlign = 'center';
     ctx.fillText('Chao Phraya River', 0, 0);
     ctx.restore();
@@ -500,8 +525,8 @@ class MapRenderer {
 
   drawDistricts(ctx) {
     for (const d of BKK.districts) {
-      const radius = 15 + d.pop * 15;
-      const alpha = d.type === 'commercial' ? 0.3 : 0.15;
+      const radius = 20 + d.pop * 20;
+      const alpha = d.type === 'commercial' ? 0.25 : 0.1;
       ctx.fillStyle = d.type === 'commercial'
         ? `rgba(249, 115, 22, ${alpha})`
         : `rgba(148, 163, 184, ${alpha})`;
@@ -511,10 +536,18 @@ class MapRenderer {
 
       // District border
       ctx.strokeStyle = d.type === 'commercial'
-        ? 'rgba(249, 115, 22, 0.3)'
-        : 'rgba(148, 163, 184, 0.15)';
-      ctx.lineWidth = 1;
+        ? 'rgba(249, 115, 22, 0.5)'
+        : 'rgba(148, 163, 184, 0.25)';
+      ctx.lineWidth = 1.5;
       ctx.stroke();
+
+      // District name (always visible)
+      ctx.fillStyle = d.type === 'commercial'
+        ? 'rgba(249, 115, 22, 0.7)'
+        : 'rgba(148, 163, 184, 0.5)';
+      ctx.font = `${d.type === 'commercial' ? 'bold ' : ''}10px Inter`;
+      ctx.textAlign = 'center';
+      ctx.fillText(d.name, d.x, d.y + radius + 14);
     }
   }
 
@@ -792,7 +825,6 @@ function init() {
     renderer.render();
   }
   window.addEventListener('resize', resize);
-  resize();
 
   // Nav buttons
   document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -895,8 +927,8 @@ function init() {
     document.getElementById('stat-pm25').textContent = Math.round(85 - t * 40 - sliders.green * 0.2);
   }
 
-  // Initial render
-  renderer.render();
+  // Initial render with auto-fit
+  renderer.fitToView();
 }
 
 // Start when DOM is ready
