@@ -3,12 +3,12 @@
 const canvas = document.getElementById('main-canvas');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(...COLORS.sky);
-scene.fog = new THREE.FogExp2(...[...COLORS.sky].map(c => c / 255), 0.015);
+scene.fog = new THREE.FogExp2(new THREE.Color(...COLORS.sky.map(c => c / 255)), 0.015);
 
 // Camera
 const camera = new THREE.PerspectiveCamera(55, canvas.clientWidth / canvas.clientHeight, 0.1, 200);
 camera.position.set(0, 40, 50);
-camera.lookAt(GRID_SIZE / 2, 0, GRID_SIZE / 2);
+camera.lookAt(new THREE.Vector3(GRID_SIZE / 2, 0, GRID_SIZE / 2));
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -267,7 +267,7 @@ function animate() {
     orbitRadius * Math.cos(orbitPhi),
     cz + orbitRadius * Math.sin(orbitPhi) * Math.sin(orbitTheta),
   );
-  camera.lookAt(cx, 0, cz);
+  camera.lookAt(new THREE.Vector3(cx, 0, cz));
 
   // Animate river
   renderer_app.groups.river.children.forEach((seg, i) => {

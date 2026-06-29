@@ -40,13 +40,15 @@ class ScenarioRenderer {
     const g = this.groups.terrain;
     g.clear();
 
-    const geo = new THREE.PlaneGeometry(GRID_SIZE * CELL, GRID_SIZE * CELL, GRID_SIZE, GRID_SIZE);
+    const segs = GRID_SIZE;
+    const geo = new THREE.PlaneGeometry(GRID_SIZE * CELL, GRID_SIZE * CELL, segs, segs);
     geo.rotateX(-Math.PI / 2);
     const pos = geo.attributes.position;
+    const colors = new Float32Array(pos.count * 3);
 
-    for (let x = 0; x < GRID_SIZE; x++) {
-      for (let y = 0; y < GRID_SIZE; y++) {
-        const idx = y * GRID_SIZE + x;
+    for (let x = 0; x < segs; x++) {
+      for (let y = 0; y < segs; y++) {
+        const idx = y * segs + x;
         const cell = this.model.terrain[x]?.[y];
         const elev = cell ? cell.elevation : 0;
         pos.setY(idx, Math.max(-0.5, elev * 0.5));
@@ -54,12 +56,14 @@ class ScenarioRenderer {
         // Color based on elevation
         const t = clamp(elev / 3, 0, 1);
         const c = lerpColor(COLORS.ground, COLORS.groundDry, t);
-        pos.setColorAt(idx, c[0]/255, c[1]/255, c[2]/255);
+        colors[idx * 3] = c[0] / 255;
+        colors[idx * 3 + 1] = c[1] / 255;
+        colors[idx * 3 + 2] = c[2] / 255;
       }
     }
 
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
     geo.attributes.position.needsUpdate = true;
-    geo.attributes.color.needsUpdate = true;
 
     const mat = new THREE.MeshLambertMaterial({
       vertexColors: true,
@@ -111,7 +115,7 @@ class ScenarioRenderer {
     this.model.parks.forEach(p => {
       const geo = new THREE.CylinderGeometry(CELL * 0.4, CELL * 0.5, p.height, 8);
       const mat = new THREE.MeshLambertMaterial({
-        color: new THREE.Color(...COLORS.park),
+        color: new THREE.Color(COLORS.park[0]/255, COLORS.park[1]/255, COLORS.park[2]/255),
         transparent: true,
         opacity: 0.85,
       });

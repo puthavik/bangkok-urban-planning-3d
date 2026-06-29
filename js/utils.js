@@ -35,7 +35,7 @@ class SimpleNoise {
     const A = this.perm[X] + Y, B = this.perm[X + 1] + Y;
     return lerp(
       lerp(grad(this.perm[A], x, y), grad(this.perm[B], x - 1, y), u),
-      lerp(grad(this.perm[A + 1], x, y - 1), grad(this.perm[B + 1], x - 1, y - 1), u),
+      lerp(grad(this.perm[A + 1], x, y - 1), grad(this.perm[B + 1], x - 1, y - 1), v),
       v
     );
   }
