@@ -81,7 +81,7 @@ class CityModel {
     this._genBuildings();
     this._genParks();
     this._genRail();
-    this._genProposedGreen();
+    this.proposedParks = this._genProposedGreen();
   }
 
   _genRiver() {
