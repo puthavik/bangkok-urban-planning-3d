@@ -3,134 +3,127 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bangkok Urban Planning - 3D Interactive Visualization</title>
+  <title>Bangkok Urban Planning — 3D Visualization</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="app">
-    <!-- Header -->
-    <header id="header">
-      <div class="header-content">
-        <h1><span class="icon">🏙️</span> Bangkok Urban Planner 3D</h1>
-        <p class="subtitle">Interactive Visualization of Sustainable Urban Design Solutions</p>
+    <!-- Top Bar -->
+    <header id="topbar">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <rect x="2" y="14" width="6" height="12" rx="1" fill="#00d4aa"/>
+          <rect x="9" y="8" width="6" height="18" rx="1" fill="#00d4aa" opacity="0.7"/>
+          <rect x="16" y="4" width="6" height="22" rx="1" fill="#00d4aa" opacity="0.5"/>
+          <rect x="23" y="10" width="6" height="16" rx="1" fill="#00d4aa" opacity="0.3"/>
+        </svg>
+        <span>Bangkok Urban Planner</span>
       </div>
       <nav id="nav">
         <button class="nav-btn active" data-view="overview">Overview</button>
         <button class="nav-btn" data-view="flooding">Flood Resilience</button>
-        <button class="nav-btn" data-view="transit">Transit Network</button>
+        <button class="nav-btn" data-view="transit">Transit</button>
         <button class="nav-btn" data-view="green">Green Spaces</button>
         <button class="nav-btn" data-view="15min">15-Minute City</button>
         <button class="nav-btn" data-view="air">Air Quality</button>
       </nav>
+      <div class="topbar-right">
+        <span class="badge">Interactive 3D Model</span>
+      </div>
     </header>
 
-    <!-- 3D Canvas Container -->
-    <div id="canvas-container">
-      <canvas id="main-canvas"></canvas>
-      <div id="info-panel" class="hidden">
-        <button id="close-info" class="close-btn">&times;</button>
-        <div class="info-content">
-          <h2 id="info-title"></h2>
-          <p id="info-desc"></p>
-          <div id="info-stats"></div>
+    <!-- Main Content -->
+    <div id="main-area">
+      <!-- 3D Canvas -->
+      <div id="canvas-wrapper">
+        <canvas id="main-canvas"></canvas>
+        <div id="overlay-info" class="hidden">
+          <button id="close-overlay" class="close-btn">&times;</button>
+          <div class="overlay-content">
+            <h2 id="overlay-title"></h2>
+            <p id="overlay-desc"></p>
+            <div id="overlay-stats"></div>
+          </div>
+        </div>
+        <div id="canvas-hint">
+          <span class="hint-icon">🖱️</span> Drag to rotate · Scroll to zoom · Click objects for details
         </div>
       </div>
-      <div id="tooltip"></div>
+
+      <!-- Sidebar -->
+      <aside id="sidebar">
+        <div class="sidebar-section">
+          <h3>Scenario Controls</h3>
+          <div id="controls">
+            <div class="control-group">
+              <label>Timeline</label>
+              <input type="range" id="time-slider" min="0" max="100" value="0">
+              <div class="slider-labels">
+                <span>2024</span><span>2040</span>
+              </div>
+            </div>
+            <div class="control-group">
+              <label>Green Cover</label>
+              <input type="range" id="green-slider" min="0" max="100" value="15">
+              <span id="green-value">15%</span>
+            </div>
+            <div class="control-group">
+              <label>Transit Coverage</label>
+              <input type="range" id="transit-slider" min="0" max="100" value="25">
+              <span id="transit-value">25%</span>
+            </div>
+            <div class="control-group">
+              <label>Flood Risk</label>
+              <input type="range" id="flood-slider" min="0" max="100" value="70">
+              <span id="flood-value">High</span>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-section">
+          <h3>Bangkok Challenges</h3>
+          <ul id="challenge-list">
+            <li class="challenge" data-type="flooding">
+              <span class="challenge-icon">🌊</span>
+              <div><strong>Severe Flooding</strong><p>City sinks 2–3 cm/yr; 70% flood-prone</p></div>
+            </li>
+            <li class="challenge" data-type="transit">
+              <span class="challenge-icon">🚇</span>
+              <div><strong>Transit Gap</strong><p>Only 25 km rail for 10M+ people</p></div>
+            </li>
+            <li class="challenge" data-type="green">
+              <span class="challenge-icon">🌳</span>
+              <div><strong>Green Deficit</strong><p>5.6 sqm/capita (WHO target: 25)</p></div>
+            </li>
+            <li class="challenge" data-type="air">
+              <span class="challenge-icon">💨</span>
+              <div><strong>Air Pollution</strong><p>PM2.5 exceeds safe levels 6+ months/yr</p></div>
+            </li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <h3>Key Stats</h3>
+          <div class="stats-grid">
+            <div class="stat-card"><span class="stat-val" id="stat-pop">10.5M</span><span class="stat-lbl">Population</span></div>
+            <div class="stat-card"><span class="stat-val" id="stat-green">5.6</span><span class="stat-lbl">sqm Green/Capita</span></div>
+            <div class="stat-card"><span class="stat-val" id="stat-rail">25</span><span class="stat-lbl">km Rail</span></div>
+            <div class="stat-card"><span class="stat-val" id="stat-flood">70%</span><span class="stat-lbl">Flood-Prone</span></div>
+            <div class="stat-card"><span class="stat-val" id="stat-pm25">85</span><span class="stat-lbl">AQI (Avg)</span></div>
+          </div>
+        </div>
+      </aside>
     </div>
 
-    <!-- Sidebar -->
-    <aside id="sidebar">
-      <div class="sidebar-section">
-        <h3>📊 Scenario Controls</h3>
-        <div id="controls">
-          <div class="control-group">
-            <label>Time Period</label>
-            <input type="range" id="time-slider" min="0" max="100" value="0">
-            <div class="slider-labels">
-              <span>2024 (Current)</span>
-              <span>2040 (Future)</span>
-            </div>
-          </div>
-          <div class="control-group">
-            <label>Green Cover</label>
-            <input type="range" id="green-slider" min="0" max="100" value="15">
-            <span id="green-value">15%</span>
-          </div>
-          <div class="control-group">
-            <label>Transit Coverage</label>
-            <input type="range" id="transit-slider" min="0" max="100" value="25">
-            <span id="transit-value">25%</span>
-          </div>
-          <div class="control-group">
-            <label>Flood Risk Level</label>
-            <input type="range" id="flood-slider" min="0" max="100" value="70">
-            <span id="flood-value">High</span>
-          </div>
-        </div>
-      </div>
-      <div class="sidebar-section">
-        <h3>🎯 Bangkok Challenges</h3>
-        <ul id="challenge-list">
-          <li class="challenge" data-type="flooding">
-            <span class="challenge-icon">🌊</span>
-            <div>
-              <strong>Severe Flooding</strong>
-              <p>City sinks 2-3 cm/year; 70% flood-prone</p>
-            </div>
-          </li>
-          <li class="challenge" data-type="transit">
-            <span class="challenge-icon">🚇</span>
-            <div>
-              <strong>Transit Gap</strong>
-              <p>Only 25km rail for 10M+ population</p>
-            </div>
-          </li>
-          <li class="challenge" data-type="green">
-            <span class="challenge-icon">🌳</span>
-            <div>
-              <strong>Green Deficit</strong>
-              <p>5.6 sqm green space/capita (WHO target: 25)</p>
-            </div>
-          </li>
-          <li class="challenge" data-type="air">
-            <span class="challenge-icon">💨</span>
-            <div>
-              <strong>Air Pollution</strong>
-              <p>PM2.5 exceeds safe levels 6+ months/year</p>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </aside>
-
-    <!-- Bottom Info Bar -->
-    <footer id="bottom-bar">
-      <div class="stats-row">
-        <div class="stat">
-          <span class="stat-value" id="stat-population">10.5M</span>
-          <span class="stat-label">Population</span>
-        </div>
-        <div class="stat">
-          <span class="stat-value" id="stat-green">5.6</span>
-          <span class="stat-label">sqm Green/Capita</span>
-        </div>
-        <div class="stat">
-          <span class="stat-value" id="stat-rail">25</span>
-          <span class="stat-label">km Rail Lines</span>
-        </div>
-        <div class="stat">
-          <span class="stat-value" id="stat-flood">70%</span>
-          <span class="stat-label">Flood-Prone Area</span>
-        </div>
-        <div class="stat">
-          <span class="stat-value" id="stat-pm25">85</span>
-          <span class="stat-label">AQI (Avg)</span>
-        </div>
+    <!-- Footer -->
+    <footer id="footer">
+      <div class="footer-content">
+        <span>Bangkok Urban Planner 3D · Based on research from <em>The Future of Urbanism</em> (2024–2025)</span>
+        <span>Data sources: Bangkok Metropolitan Administration, WHO, World Bank</span>
       </div>
     </footer>
   </div>
 
-  <!-- Three.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="js/app.js"></script>
 </body>
