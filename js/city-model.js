@@ -1,7 +1,5 @@
 // === City Model Generator - Bangkok-inspired layout ===
-
-const GRID_SIZE = 60;
-const CELL = 1;
+// GRID_SIZE and CELL defined in main.js (60, 1)
 
 class CityModel {
   constructor() {

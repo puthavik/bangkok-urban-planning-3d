@@ -1,4 +1,6 @@
 // === Main Application ===
+const GRID_SIZE = 60;
+const CELL = 1;
 
 const canvas = document.getElementById('main-canvas');
 const scene = new THREE.Scene();
