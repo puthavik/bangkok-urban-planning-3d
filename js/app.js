@@ -281,20 +281,20 @@ class ScenarioRenderer {
 // === Main App ===
 const canvas = document.getElementById('main-canvas');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(...COLORS.sky);
-scene.fog = new THREE.FogExp2(new THREE.Color(COLORS.sky[0] / 255, COLORS.sky[1] / 255, COLORS.sky[2] / 255), 0.015);
+scene.background = new THREE.Color(0.7, 0.8, 0.9);
+scene.fog = new THREE.FogExp2(0.7, 0.008);
 
 const camera = new THREE.PerspectiveCamera(55, canvas.clientWidth / canvas.clientHeight, 0.1, 200);
-camera.position.set(0, 40, 50);
+camera.position.set(GRID_SIZE / 2, 40, GRID_SIZE / 2 + 40);
 camera.lookAt(new THREE.Vector3(GRID_SIZE / 2, 0, GRID_SIZE / 2));
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.shadowMap.enabled = true;
 
-const ambient = new THREE.AmbientLight(0x8899bb, 0.5); scene.add(ambient);
-const sun = new THREE.DirectionalLight(0xffeedd, 1.0); sun.position.set(30, 50, 20); sun.castShadow = true; scene.add(sun);
-const fill = new THREE.DirectionalLight(0x4488cc, 0.3); fill.position.set(-20, 20, -10); scene.add(fill);
+const ambient = new THREE.AmbientLight(0xffffff, 0.6); scene.add(ambient);
+const sun = new THREE.DirectionalLight(0xffffff, 0.8); sun.position.set(30, 50, 20); scene.add(sun);
+const fill = new THREE.DirectionalLight(0x8899bb, 0.4); fill.position.set(-20, 20, -10); scene.add(fill);
 
 let orbitTheta = Math.PI / 4, orbitPhi = Math.PI / 4, orbitRadius = 55;
 let isDragging = false, lastMouse = { x: 0, y: 0 };
